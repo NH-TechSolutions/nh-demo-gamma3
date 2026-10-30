@@ -80,7 +80,31 @@ svg{width:100%;height:64px;display:block}
 .box ul{margin:6px 0 0;padding-left:18px;font-size:13px;line-height:1.55}
 .box .nome{padding-right:0}
 footer{text-align:center;color:var(--muted);font-size:11px;padding:16px 16px 18px}
-[hidden]{display:none!important}
+[hidden],.nascosto{display:none!important}
+/* schema dell'impianto: foto con punti di misura + schema di processo */
+.schema{display:grid;grid-template-columns:1.15fr 1fr;gap:12px;margin-top:8px}
+.foto{position:relative;background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.foto img{width:100%;display:block}
+.foto .did{position:absolute;left:10px;bottom:8px;font-size:11px;color:#fff;background:rgba(31,42,54,.72);padding:3px 8px;border-radius:4px}
+.tag{position:absolute;transform:translate(-50%,-100%);background:var(--card);border:1.5px solid var(--plc);border-radius:6px;padding:3px 7px;font-size:11px;line-height:1.3;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,.18)}
+.tag::after{content:"";position:absolute;left:50%;bottom:-7px;width:10px;height:10px;background:var(--plc);border-radius:50%;transform:translateX(-50%);box-shadow:0 0 0 2px #fff}
+.tag.nuovo{border-color:var(--new)} .tag.nuovo::after{background:var(--new)}
+.tag.mecc{border-style:dashed;color:var(--muted)} .tag.mecc::after{background:var(--muted)}
+.tag b{font-size:12.5px;font-variant-numeric:tabular-nums}
+.tag small{color:var(--muted)}
+.proc{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.proc svg{width:100%;height:auto;display:block}
+.proc text{font-family:Helvetica,Arial,sans-serif;fill:var(--ink);font-size:11px}
+.proc .n{font-weight:700;font-size:11.5px}
+.proc .v{font-weight:700;font-size:12.5px;font-variant-numeric:tabular-nums}
+.proc .v.plc{fill:var(--plc)} .proc .v.nuovo{fill:var(--new)} .proc .v.mecc{fill:var(--muted)}
+.proc .u{fill:var(--muted);font-size:10px}
+.proc .tubo{stroke:var(--accent);stroke-width:3;fill:none;opacity:.55}
+.proc .tubo.sc{stroke:var(--muted);stroke-dasharray:6 4}
+.proc .tubo.ch{stroke:#6DA83A;stroke-width:2;stroke-dasharray:3 3}
+.proc .app{fill:var(--bg);stroke:var(--line);stroke-width:1.2}
+.proc .pt{fill:var(--card);stroke:var(--plc);stroke-width:1.5} .proc .pt.nuovo{stroke:var(--new)} .proc .pt.mecc{stroke:var(--muted);stroke-dasharray:3 2}
+@media (max-width:900px){.schema{grid-template-columns:1fr}.tag{font-size:10px}.tag b{font-size:11px}}
 @media (max-width:760px){
   header{flex-wrap:wrap;padding:12px 16px}.stato{margin-left:0;text-align:left;width:100%}
   .wrap{padding:4px 16px 0}.livelli{grid-template-columns:1fr}.basso{grid-template-columns:1fr}
@@ -107,6 +131,66 @@ footer{text-align:center;color:var(--muted);font-size:11px;padding:16px 16px 18p
 
   <div class="sezione">Indicatori</div>
   <section class="kpi" id="kpi"></section>
+
+  <div class="sezione">La macchina e i punti di misura</div>
+  <div class="schema">
+    <div class="foto">
+      <img src="ro4000_foto.jpg" alt="RO 4000 TS Gamma 3: prefiltro, membrane, quadro, pompa">
+      <!-- posizioni in percentuale della foto; liv 1 = dal PLC, 2 = aggiunto, mecc = strumento meccanico di oggi -->
+      <div class="tag" style="left:60%;top:26%" data-liv="1">PLC + touch<br><b data-live="c2" data-d="2"></b> <small>µS/cm 2° pass.</small></div>
+      <div class="tag" style="left:86%;top:30%" data-liv="1">Pompa di sovrappressione<br><b id="f_hp"></b> <small>· <span data-live="ore" data-d="0"></span> h</small></div>
+      <div class="tag" style="left:31%;top:66%" data-liv="1">Elettrovalvola di flussaggio<br><small>ultimo lavaggio 07:52, dal PLC</small></div>
+      <div class="tag mecc" style="left:10.5%;top:30%" data-liv="1">Manometro ingresso<br><small>letto a occhio in visita</small></div>
+      <div class="tag mecc" style="left:23%;top:43%" data-liv="1">Flussimetro ad area variabile<br><small>letto a occhio in visita</small></div>
+      <div class="tag nuovo" style="left:10.5%;top:30%" data-liv="2" hidden>P ingresso · P200<br><b data-live="pi" data-d="2"></b> <small>bar</small></div>
+      <div class="tag nuovo" style="left:17%;top:52%" data-liv="2" hidden>P dopo prefiltro · P200<br><b data-live="pf" data-d="2"></b> <small>bar</small></div>
+      <div class="tag nuovo" style="left:23%;top:43%" data-liv="2" hidden>Alimento · FMS500 DN40<br><b data-live="qf" data-d="2"></b> <small>m³/h → pompa dosatrice</small></div>
+      <div class="tag nuovo" style="left:40%;top:31%" data-liv="2" hidden>P alimento membrane · P200<br><b data-live="pm" data-d="1"></b> <small>bar</small></div>
+      <div class="tag nuovo" style="left:92%;top:62%" data-liv="2" hidden>P concentrato · P200<br><b data-live="pc" data-d="1"></b> <small>bar</small></div>
+      <div class="tag nuovo" style="left:62%;top:78%" data-liv="2" hidden>Concentrato · FMS500 DN25<br><b data-live="qc" data-d="2"></b> <small>m³/h</small></div>
+      <div class="tag nuovo" style="left:78%;top:72%" data-liv="2" hidden>T alimento · TH100<br><b data-live="tf" data-d="1"></b> <small>°C</small></div>
+      <div class="did">RO 4000 TS, foto Gamma 3 · serbatoi e dosaggio fuori inquadratura</div>
+    </div>
+    <div class="proc">
+      <svg viewBox="0 0 600 345" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Schema di processo della RO 4000 con i valori in tempo reale">
+        <!-- tubazioni -->
+        <path class="tubo" d="M8 70 H345"/>
+        <path class="tubo ch" d="M230 30 V70" data-liv="2"/>
+        <path class="tubo sc" d="M382 92 V150 H110"/>
+        <path class="tubo" d="M420 60 H480 V118"/>
+        <path class="tubo" d="M480 162 V198"/>
+        <path class="tubo" d="M480 242 V268"/>
+        <!-- apparecchi -->
+        <rect x="95" y="54" width="40" height="32" rx="6" class="app"/><text x="88" y="110" class="u">prefiltro 5 µm</text>
+        <g data-liv="2"><rect x="200" y="4" width="132" height="28" rx="5" class="app"/><text x="206" y="16" class="u">dosaggio G3antiscal</text><text x="206" y="27" class="v nuovo" style="font-size:10.5px"><tspan data-live="cmd" data-d="0"></tspan><tspan class="u"> % pompa · </tspan><tspan data-live="la" data-d="0"></tspan><tspan class="u"> % fusto</tspan></text></g>
+        <circle cx="268" cy="70" r="14" class="app"/><text x="254" y="110" class="u">pompa</text>
+        <rect x="345" y="48" width="75" height="44" rx="8" class="app"/><text x="351" y="66" class="n">Membrane</text><text x="351" y="80" class="u">1° passaggio</text>
+        <text x="428" y="56" class="u">permeato 1°</text>
+        <text x="110" y="166" class="u">concentrato allo scarico</text>
+        <rect x="450" y="118" width="60" height="44" rx="6" class="app"/><text x="455" y="136" class="u">serbatoio</text><text x="455" y="150" class="u">intermedio</text>
+        <rect x="450" y="198" width="60" height="44" rx="8" class="app"/><text x="455" y="216" class="n">Membrane</text><text x="455" y="230" class="u">2° passaggio</text>
+        <rect x="430" y="268" width="115" height="48" rx="6" class="app"/><text x="436" y="288" class="n">Accumulo 10 m³</text><text x="436" y="304" class="u" id="s_lv"></text>
+        <!-- punti di misura sulla linea di alimento -->
+        <g data-liv="2"><circle cx="35" cy="70" r="8" class="pt nuovo"/><text x="22" y="48" class="u">T alim.</text><text x="12" y="96" class="v nuovo"><tspan data-live="tf" data-d="1"></tspan><tspan class="u"> °C</tspan></text></g>
+        <g data-liv="2"><circle cx="70" cy="70" r="8" class="pt nuovo"/><text x="58" y="48" class="u">P ingr.</text><text x="62" y="96" class="v nuovo" style="font-size:11.5px"><tspan data-live="pi" data-d="2"></tspan><tspan class="u"> bar</tspan></text></g>
+        <g data-liv="1"><circle cx="70" cy="70" r="8" class="pt mecc"/><text x="46" y="48" class="u">manometro</text></g>
+        <g data-liv="2"><circle cx="160" cy="70" r="8" class="pt nuovo"/><text x="146" y="48" class="u">P filtro</text><text x="140" y="96" class="v nuovo"><tspan data-live="pf" data-d="2"></tspan><tspan class="u"> bar</tspan></text></g>
+        <g data-liv="2"><circle cx="208" cy="70" r="8" class="pt nuovo"/><text x="192" y="48" class="u">Q alim.</text><text x="190" y="96" class="v nuovo"><tspan data-live="qf" data-d="2"></tspan><tspan class="u"> m³/h</tspan></text></g>
+        <g data-liv="1"><circle cx="208" cy="70" r="8" class="pt mecc"/><text x="186" y="48" class="u">flussimetro</text><text x="188" y="96" class="v mecc">a occhio</text></g>
+        <g data-liv="2"><circle cx="322" cy="70" r="8" class="pt nuovo"/><text x="304" y="48" class="u">P membr.</text><text x="300" y="96" class="v nuovo"><tspan data-live="pm" data-d="1"></tspan><tspan class="u"> bar</tspan></text></g>
+        <!-- concentrato -->
+        <g data-liv="2"><circle cx="382" cy="118" r="8" class="pt nuovo"/><text x="395" y="116" class="u">P conc.</text><text x="395" y="130" class="v nuovo"><tspan data-live="pc" data-d="1"></tspan><tspan class="u"> bar</tspan></text></g>
+        <g data-liv="2"><circle cx="300" cy="150" r="8" class="pt nuovo"/><text x="284" y="136" class="u">Q conc.</text><text x="278" y="170" class="v nuovo"><tspan data-live="qc" data-d="2"></tspan><tspan class="u"> m³/h</tspan></text></g>
+        <!-- permeato e serbatoi -->
+        <g data-liv="1"><circle cx="480" cy="92" r="8" class="pt"/><text x="492" y="90" class="u">cond. 1°</text><text x="492" y="104" class="v plc"><tspan data-live="c1" data-d="1"></tspan><tspan class="u"> µS/cm</tspan></text></g>
+        <g data-liv="1"><circle cx="510" cy="140" r="8" class="pt"/><text x="522" y="144" class="u">livello min/max</text></g>
+        <g data-liv="1"><circle cx="480" cy="255" r="8" class="pt"/><text x="340" y="252" class="u">cond. 2° passaggio</text><text x="340" y="266" class="v plc"><tspan data-live="c2" data-d="2"></tspan><tspan class="u"> µS/cm</tspan></text></g>
+        <g data-liv="2"><circle cx="545" cy="292" r="8" class="pt nuovo"/><text x="556" y="296" class="v nuovo"><tspan data-live="ls" data-d="0"></tspan><tspan class="u"> %</tspan></text></g>
+        <g data-liv="2"><text x="8" y="300" class="u">Permeato (calcolato)</text><text x="8" y="316" class="v nuovo"><tspan data-live="qp" data-d="2"></tspan><tspan class="u"> m³/h · recupero </tspan><tspan data-live="rec" data-d="0"></tspan><tspan class="u"> %</tspan></text></g>
+        <text x="8" y="340" class="u">blu: dal PLC · ciano: aggiunto · tratteggio: meccanico, letto a occhio</text>
+      </svg>
+    </div>
+  </div>
 
   <div class="sezione">Punti di misura</div>
   <main id="griglia"></main>
@@ -238,6 +322,12 @@ function giro(){
   document.getElementById("v_pr").textContent = "OK";
   document.getElementById("m_pr").textContent = "ultimo blocco oggi 05:10, 4 min";
 
+  // valori vivi su foto e schema
+  const live = Object.assign({}, v, {ore, cmd, la: livA, rec: v.qp / v.qf * 100});
+  document.querySelectorAll("[data-live]").forEach(e => { const x = live[e.dataset.live]; if (x != null) e.textContent = fmt(x, +e.dataset.d); });
+  document.getElementById("f_hp").textContent = pieno ? "ferma" : "in marcia";
+  document.getElementById("s_lv").textContent = pieno ? "pieno, produzione ferma" : "in riempimento";
+
   const K = [
     {liv:1, l:"Qualità acqua prodotta", v:fmt(v.c2, 2), u:"µS/cm", st: v.c2 > 4.2 ? "allarme" : v.c2 > 3.4 ? "att" : "", n:"spec. BiOs 0,8-4,2 µS/cm"},
     {liv:1, l:"Reiezione 2° passaggio", v:fmt((1 - v.c2 / v.c1) * 100, 1), u:"%", st:"", n:"dalle due conducibilità"},
@@ -260,6 +350,8 @@ function livello(n){
   document.getElementById("b2").setAttribute("aria-pressed", n === 2);
   document.getElementById("leg2").hidden = n === 1; document.getElementById("leg3").hidden = n === 1;
   document.querySelectorAll(".card[data-liv='2']").forEach(c => c.hidden = n === 1);
+  document.querySelectorAll(".tag[data-liv='2'], .proc [data-liv='2']").forEach(c => c.classList.toggle("nascosto", n === 1));
+  document.querySelectorAll(".tag.mecc, .proc g:has(.pt.mecc)").forEach(c => c.classList.toggle("nascosto", n === 2));
   document.getElementById("manca").hidden = n === 2;
   document.getElementById("eventi").innerHTML = EVENTI.filter(e => e.liv <= n).map(e => `<tr><td>${e.ora}</td><td>${e.p}</td><td>${e.e}</td></tr>`).join("");
   document.getElementById("serve").innerHTML = n === 1
