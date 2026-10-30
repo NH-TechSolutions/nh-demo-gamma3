@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Architettura pagina dati</title>
+<!-- Pagina 3 del PDF per Gamma 3 (30/10/2026): come arrivano i dati, cosa cambia per le tre versioni RO, le tre viste. Immagini: shot_telefono_alto.png e shot_livello2.png nella stessa cartella. -->
+<style>
+:root{--bg:#F3F6F9;--card:#FFFFFF;--ink:#1F2A36;--muted:#707080;--line:#DDE4EC;--ok:#6DA83A;--accent:#4878A8;--new:#0896B8;--wave:#08B0D8}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#0F161D;--card:#17212B;--ink:#E6EDF3;--muted:#9AA6B2;--line:#26323E;--accent:#7FA6D0;--new:#3CC3E3}}
+:root[data-theme="dark"]{--bg:#0F161D;--card:#17212B;--ink:#E6EDF3;--muted:#9AA6B2;--line:#26323E;--accent:#7FA6D0;--new:#3CC3E3}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Helvetica,Arial,"Segoe UI",sans-serif}
+header{display:flex;align-items:center;gap:18px;padding:12px 22px;background:var(--card);border-bottom:1px solid var(--line);position:relative}
+header::after{content:"";position:absolute;left:0;right:0;bottom:-4px;height:4px;background:linear-gradient(90deg,var(--accent) 0%,var(--wave) 55%,color-mix(in srgb,var(--wave) 20%,transparent) 100%)}
+.logo img{height:54px;width:auto;display:block}
+h1{margin:0;font-size:19px}
+.sub{color:var(--muted);font-size:13px;margin-top:2px}
+.wrap{max-width:1400px;margin:0 auto;padding:4px 22px 18px}
+.sezione{font-size:11.5px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.8px;margin:18px 0 8px}
+.box{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+.arch svg{width:100%;height:auto;display:block}
+.arch text{font-family:Helvetica,Arial,sans-serif;fill:var(--ink)}
+.arch .m{fill:var(--muted);font-size:11px}
+.arch .t{font-size:13px;font-weight:700}
+.arch .nodo{fill:var(--card);stroke:var(--line);stroke-width:1.2}
+.arch .nodo.plc{stroke:var(--accent);stroke-width:2}
+.arch .nodo.nh{stroke:var(--new);stroke-width:2}
+.arch .filo{stroke:var(--accent);stroke-width:2;fill:none}
+.arch .filo.n{stroke:var(--new)}
+.arch .filo.d{stroke-dasharray:5 4}
+table{width:100%;border-collapse:collapse;font-size:13px}
+td,th{padding:7px 9px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{color:var(--muted);font-weight:700;font-size:12px}
+td b{font-weight:700}
+.tag{display:inline-block;font-size:10.5px;font-weight:700;padding:1px 6px;border-radius:4px;color:var(--new);background:color-mix(in srgb,var(--new) 14%,transparent)}
+.tag.plc{color:var(--accent);background:color-mix(in srgb,var(--accent) 14%,transparent)}
+.viste{display:grid;grid-template-columns:1.6fr 1fr 0.8fr;gap:12px}
+.vista{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+.vista h3{margin:0 0 2px;font-size:14px}
+.vista p{margin:0 0 10px;font-size:12.5px;color:var(--muted);line-height:1.45}
+.vista img{width:100%;display:block;border:1px solid var(--line);border-radius:6px}
+.vista .tel{max-width:230px;margin:0 auto}
+.pannello{border:10px solid #2B3340;border-radius:8px;background:#0B1F33;color:#E6EDF3;padding:12px;font-size:12px;line-height:1.5;min-height:160px}
+.pannello b{color:#8FD3F4}
+.pannello .riga{display:flex;justify-content:space-between;border-bottom:1px solid #22384F;padding:3px 0}
+footer{text-align:center;color:var(--muted);font-size:11px;padding:10px 16px 0}
+@media (max-width:900px){.viste{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo"><img src="logo_gamma3.png" alt="gamma 3 ecologia"></div>
+  <div><h1>Pagina dati per le RO industriali · come funziona</h1><div class="sub">architettura, cosa cambia per le tre versioni, le tre viste</div></div>
+</header>
+
+<div class="wrap">
+  <div class="sezione">Architettura: dalla macchina al telefono</div>
+  <div class="box arch">
+    <svg viewBox="0 0 1240 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Schema: sensori e PLC in macchina, gateway 4G, SIM, server NH Tech Solutions, viste web, pannello e telefono">
+      <defs><marker id="fr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#4878A8"/></marker>
+      <marker id="fn" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#0896B8"/></marker></defs>
+      <!-- macchina -->
+      <rect x="10" y="20" width="360" height="260" rx="12" class="nodo" stroke-dasharray="6 4"/>
+      <text x="26" y="44" class="t">Macchina Gamma 3 (RO EL-TS)</text>
+      <text x="26" y="60" class="m">quadro IP65, 24 V del costruttore</text>
+      <rect x="26" y="78" width="150" height="86" rx="8" class="nodo plc"/>
+      <text x="36" y="98" class="t">PLC + touch TS</text>
+      <text x="36" y="116" class="m">conducibilità, livelli min/max,</text>
+      <text x="36" y="130" class="m">pompa, lavaggi, allarmi</text>
+      <text x="36" y="150" class="m">Ethernet o RS485 · Modbus</text>
+      <rect x="26" y="180" width="150" height="86" rx="8" class="nodo" stroke="#0896B8" stroke-width="2"/>
+      <text x="36" y="200" class="t">Trasmettitori SITRANS</text>
+      <text x="36" y="218" class="m">FMS500 alimento e concentrato</text>
+      <text x="36" y="232" class="m">P200 ×4 · TH100 · LU240 ×2</text>
+      <text x="36" y="252" class="m">livello 2 · 4-20 mA e Modbus</text>
+      <rect x="206" y="112" width="156" height="108" rx="8" class="nodo nh"/>
+      <text x="216" y="134" class="t">Gateway 4G</text>
+      <text x="216" y="152" class="m">Teltonika TRB145, guida DIN</text>
+      <text x="216" y="166" class="m">+ modulo 8 ingressi 4-20 mA</text>
+      <text x="216" y="180" class="m">SIM IoT 10 anni inclusa</text>
+      <text x="216" y="198" class="m">allarmi locali immediati</text>
+      <path d="M176 121 H206" class="filo" marker-end="url(#fr)"/>
+      <path d="M176 223 H190 V166 H206" class="filo n" marker-end="url(#fn)"/>
+      <!-- cellulare -->
+      <path d="M362 166 H432" class="filo n d" marker-end="url(#fn)"/>
+      <text x="366" y="154" class="m">4G, ogni 5 min</text>
+      <text x="366" y="186" class="m">allarmi subito</text>
+      <!-- server -->
+      <rect x="440" y="96" width="220" height="140" rx="12" class="nodo nh"/>
+      <text x="456" y="120" class="t">Server NH Tech Solutions (UE)</text>
+      <text x="456" y="140" class="m">storico e grafici</text>
+      <text x="456" y="156" class="m">calcoli: recupero, ΔP, permeato</text>
+      <text x="456" y="170" class="m">normalizzato, giorni al riordino</text>
+      <text x="456" y="188" class="m">allarmi email e notifica</text>
+      <text x="456" y="204" class="m">rapporto settimanale PDF</text>
+      <text x="456" y="222" class="m">pagina con il logo Gamma 3</text>
+      <!-- viste -->
+      <path d="M660 130 H740" class="filo n" marker-end="url(#fn)"/>
+      <path d="M660 166 H740" class="filo n" marker-end="url(#fn)"/>
+      <path d="M660 202 H740" class="filo n" marker-end="url(#fn)"/>
+      <rect x="750" y="100" width="230" height="56" rx="8" class="nodo"/>
+      <text x="762" y="122" class="t">Web · servizio tecnico Gamma 3</text>
+      <text x="762" y="140" class="m">tutto il parco macchine, soglie, utenti</text>
+      <rect x="750" y="166" width="230" height="56" rx="8" class="nodo"/>
+      <text x="762" y="188" class="t">Telefono · cliente finale</text>
+      <text x="762" y="206" class="m">la sua macchina, sola lettura, notifiche</text>
+      <rect x="750" y="232" width="230" height="48" rx="8" class="nodo"/>
+      <text x="762" y="252" class="t">Pannello touch in macchina</text>
+      <text x="762" y="268" class="m">resta com'è: il PLC non cambia</text>
+      <path d="M660 236 H700 V256 H740" class="filo d" marker-end="url(#fr)"/>
+      <!-- riordino -->
+      <rect x="1000" y="120" width="230" height="86" rx="8" class="nodo" stroke="#6DA83A" stroke-width="2"/>
+      <text x="1012" y="142" class="t">Riordino consumabili</text>
+      <text x="1012" y="160" class="m">antincrostante, cartucce, membrane:</text>
+      <text x="1012" y="174" class="m">avviso a Gamma 3 o al rivenditore</text>
+      <text x="1012" y="192" class="m">prima del fermo macchina</text>
+      <path d="M980 128 H1000" class="filo n" marker-end="url(#fn)"/>
+    </svg>
+  </div>
+
+  <div class="sezione">Cosa cambia nelle tre versioni della linea RO</div>
+  <div class="box">
+    <table>
+      <thead><tr><th style="width:14%">Versione</th><th style="width:30%">Cosa c'è a bordo oggi</th><th style="width:26%">Livello 1 · solo PLC</th><th>Livello 2 · trasmettitori</th></tr></thead>
+      <tbody>
+        <tr><td><b>Base</b><br><span class="m" style="color:var(--muted);font-size:12px">singolo passaggio</span></td><td>PLC con conducibilità prodotta, pressostato di minima, galleggianti serbatoio; flussimetri e manometri meccanici</td><td><span class="tag plc">gateway + SIM</span> conducibilità, stati, ore, lavaggi, contalitri se c'è</td><td><span class="tag">kit completo</span> 2 FMS500, 4 P200, TH100, 2 LU240; permeato per differenza</td></tr>
+        <tr><td><b>BiOs</b><br><span style="color:var(--muted);font-size:12px">doppio passaggio</span></td><td>come Base, più conducibilità del 1° stadio e blocco di massima pressione; serbatoio intermedio</td><td><span class="tag plc">gateway + SIM</span> le due conducibilità danno la reiezione del 2° passaggio</td><td><span class="tag">kit completo</span> come Base; il 2° passaggio sotto 5 µS/cm non si misura con un magnetico (ultrasonico su richiesta)</td></tr>
+        <tr><td><b>BiOs-EDI</b><br><span style="color:var(--muted);font-size:12px">bi-osmosi + cEDI</span></td><td>misuratori magnetici e trasduttori di pressione già collegati al PLC, pH del 1° stadio</td><td><span class="tag plc">gateway + SIM</span> portate e pressioni si leggono già dal PLC: quasi tutto il livello 2 senza sensori nuovi</td><td><span class="tag">fornitura</span> gli stessi magnetici e trasduttori in SITRANS, se vi conviene; TH100 e LU240 come opzione</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="sezione">Le tre viste</div>
+  <div class="viste">
+    <div class="vista"><h3>Web, per il servizio tecnico</h3><p>Tutte le macchine installate in una pagina, con soglie, utenti e storico. È la schermata delle pagine precedenti.</p><img src="shot_livello2.png" alt="schermata web della pagina dati"></div>
+    <div class="vista"><h3>Pannello touch in macchina</h3><p>Resta quello di oggi, con il programma del PLC invariato. Il gateway legge, non scrive.</p>
+      <div class="pannello"><b>RO 4000 · TS</b><div class="riga"><span>Stato</span><span>PRODUZIONE</span></div><div class="riga"><span>Conducibilità 2° pass.</span><span>2,55 µS/cm</span></div><div class="riga"><span>Serbatoio</span><span>in riempimento</span></div><div class="riga"><span>Prossimo flussaggio</span><span>00:42</span></div><div class="riga"><span>Allarmi</span><span>nessuno</span></div><div style="margin-top:8px;color:#9AA6B2">schermata del vostro pannello, non nostra</div></div></div>
+    <div class="vista"><h3>Telefono, per il cliente</h3><p>Solo la sua macchina, in sola lettura, con le notifiche. Nessuna app da installare: si apre dal browser.</p><img class="tel" src="shot_telefono_alto.png" alt="schermata da telefono"></div>
+  </div>
+  <footer>Pagina compresa nella fornitura degli strumenti · canone solo per una SIM con più traffico o un server dedicato · valori simulati · NH Tech Solutions</footer>
+</div>
+</body>
+</html>
